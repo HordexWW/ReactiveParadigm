@@ -1,0 +1,43 @@
+<configuration>
+
+    <property name="requestIdString" value="requestId:"/>
+
+    <appender name="ConsoleLogForResponcesFromOtherMicroservices" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="com.griddynamics.sshmygin.reactive.logging.filters.RequestIdLogFilter"/>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>[%d{yyyy-MM-dd HH:mm:ss}] [%-5level] [${requestIdString} %X{requestIdMDC}] %msg%n</Pattern>
+        </layout>
+    </appender>
+
+    <appender name="ConsoleLogExceptResponces" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="com.griddynamics.sshmygin.reactive.logging.filters.ExceptRequestIdLogFilter"/>
+        <layout>
+            <Pattern>[%d{yyyy-MM-dd HH:mm:ss}] [%-5level] %msg%n</Pattern>
+        </layout>
+    </appender>
+
+    <appender
+            name="RollingFileLogForResponcesFromOtherMicroservices"
+            class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss}] [%-5level] [${requestIdString} %X{requestIdMDC}] %msg%n</pattern>
+        </encoder>
+        <filter class="com.griddynamics.sshmygin.reactive.logging.filters.RequestIdLogFilter"/>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>./logs/%d{yyyy-MM-dd}/responceLogs.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>10MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+
+        </rollingPolicy>
+    </appender>
+
+    <root level="info">
+        <appender-ref ref="ConsoleLogForResponcesFromOtherMicroservices"/>
+        <appender-ref ref="ConsoleLogExceptResponces"/>
+        <appender-ref ref="RollingFileLogForResponcesFromOtherMicroservices"/>
+    </root>
+</configuration>
+
+
