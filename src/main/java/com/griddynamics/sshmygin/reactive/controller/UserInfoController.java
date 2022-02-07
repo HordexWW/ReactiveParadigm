@@ -1,7 +1,7 @@
 package com.griddynamics.sshmygin.reactive.controller;
 
-import com.griddynamics.sshmygin.reactive.model.Product;
-import com.griddynamics.sshmygin.reactive.service.UserInfoService;
+import com.griddynamics.sshmygin.reactive.model.OrderFullInfo;
+import com.griddynamics.sshmygin.reactive.service.OrderInfoCompositionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,14 +20,14 @@ import java.util.UUID;
 @Slf4j
 public class UserInfoController {
 
-    UserInfoService userInfoService;
+    private final OrderInfoCompositionService orderInfoCompositionService;
 
-    public UserInfoController(UserInfoService userInfoService) {
-        this.userInfoService = userInfoService;
+    public UserInfoController(OrderInfoCompositionService orderInfoCompositionService) {
+        this.orderInfoCompositionService = orderInfoCompositionService;
     }
 
     @GetMapping(value = "/orders", produces = MediaType.APPLICATION_NDJSON_VALUE)
-    public Mono<Product> noname(
+    public Mono<OrderFullInfo> getOrderInfoWithTheMostRelevantProduct(
             @RequestParam String userId,
             @RequestHeader(required = false, name = "requestId") String requestId) {
 
@@ -35,7 +35,7 @@ public class UserInfoController {
                 UUID.randomUUID().toString().substring(0, 11) :
                 requestId;
 
-        return userInfoService.getTheMostRelevantProduct(userId)
+        return orderInfoCompositionService.getTheMostRelevantProduct(userId)
                 .contextWrite(Context.of("requestId", idToPutInContext));
     }
 }
